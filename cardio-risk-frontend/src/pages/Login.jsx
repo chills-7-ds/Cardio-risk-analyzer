@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import InputField from "../components/InputField";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const { login } = useAuth();
-  const navigate = useNavigate();
 
   const isValid = email.includes("@") && password.length >= 6;
 
@@ -45,48 +45,83 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <Card className="w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-1">
-          Cardio Risk Analyzer
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      {/* LEFT BRAND PANEL */}
+      <div className="hidden lg:flex flex-col justify-center px-16
+                      bg-gradient-to-br from-blue-600 via-blue-500 to-teal-500
+                      text-white">
+        <h1 className="text-4xl font-bold mb-6 leading-tight">
+          Cardio Risk<br />Analyzer
         </h1>
-        <p className="text-center text-gray-500 mb-6">
-          Secure access for doctors & researchers
+
+        <p className="text-lg text-blue-100 max-w-md">
+          An intelligent clinical decision‑support platform empowering
+          healthcare professionals to assess cardiovascular risk with clarity
+          and confidence.
         </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <InputField
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            placeholder="doctor@example.com"
-          />
+        <div className="mt-10 text-sm text-blue-200">
+          Trusted by clinicians • Research‑driven • Secure by design
+        </div>
+      </div>
 
-          <InputField
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            placeholder="••••••••"
-          />
+      {/* RIGHT LOGIN CARD */}
+      <div className="flex items-center justify-center bg-[var(--bg)] px-4">
+        <Card className="w-full max-w-md p-8">
+          <h2 className="text-3xl font-bold text-center mb-2">
+            Welcome Back
+          </h2>
 
-          {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          )}
+          <p className="text-center text-gray-500 mb-8">
+            Sign in to continue to Cardio Risk Analyzer
+          </p>
 
-          <button
-            type="submit"
-            disabled={!isValid || loading}
-            className="w-full py-2.5 rounded-md bg-blue-600 text-white font-semibold
-                       hover:bg-blue-700 disabled:opacity-60 transition"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-      </Card>
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            <InputField
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@hospital.com"
+              disabled={loading}
+            />
+
+            <InputField
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              disabled={loading}
+            />
+
+            {error && (
+              <p className="text-sm text-red-600 text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={!isValid || loading}
+              className="w-full py-3 rounded-lg font-semibold text-white
+                         bg-gradient-to-r from-blue-600 to-teal-500
+                         hover:opacity-95 transition
+                         disabled:opacity-60"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <p className="text-sm text-center text-gray-500 mt-6">
+            Don’t have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-blue-600 font-medium hover:underline"
+            >
+              Create one
+            </Link>
+          </p>
+        </Card>
+      </div>
     </div>
   );
 }

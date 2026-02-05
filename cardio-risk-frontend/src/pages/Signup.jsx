@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { signupUser } from "../services/authService";
 import Card from "../components/Card";
 import InputField from "../components/InputField";
@@ -23,21 +23,12 @@ export default function Signup() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.password || !formData.role)
-      return "All required fields must be filled.";
-    if (formData.role === "DOCTOR" && !formData.specialization)
-      return "Specialization is required for doctors.";
-    return null;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
+    if (!formData.name || !formData.email || !formData.password || !formData.role) {
+      setError("Please fill all required fields");
       return;
     }
 
@@ -49,9 +40,7 @@ export default function Signup() {
         password: formData.password,
         role: formData.role === "DOCTOR" ? "Doctor" : "Researcher",
         specialization:
-          formData.role === "DOCTOR"
-            ? formData.specialization.trim()
-            : undefined,
+          formData.role === "DOCTOR" ? formData.specialization.trim() : undefined,
       });
 
       navigate("/login");
@@ -63,81 +52,108 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <Card className="w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Create Account
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+      
+      {/* LEFT BRAND PANEL */}
+      <div className="hidden md:flex flex-col justify-center px-16 bg-gradient-to-br from-blue-600 to-teal-500 text-white">
+        <h1 className="text-4xl font-bold mb-4 leading-tight">
+          Cardio Risk <br /> Analyzer
         </h1>
+        <p className="text-lg text-blue-100 max-w-md">
+          A smart clinical decision-support platform helping doctors and researchers
+          assess cardiovascular risk with confidence.
+        </p>
+        <div className="mt-10 text-sm text-blue-100">
+          Secure • Research-driven • Healthcare-focused
+        </div>
+      </div>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <InputField
-            label="Full Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
+      {/* RIGHT FORM PANEL */}
+      <div className="flex items-center justify-center px-6 bg-[var(--bg)]">
+        <Card className="w-full max-w-md">
+          <h2 className="text-3xl font-bold text-center mb-1">
+            Create Account
+          </h2>
+          <p className="text-center text-gray-500 mb-6">
+            Join as a Doctor or Researcher
+          </p>
 
-          <InputField
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-
-          <InputField
-            label="Password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Role
-            </label>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  role: e.target.value,
-                  specialization: "",
-                })
-              }
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Role</option>
-              <option value="DOCTOR">Doctor</option>
-              <option value="RESEARCHER">Researcher</option>
-            </select>
-          </div>
-
-          {formData.role === "DOCTOR" && (
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <InputField
-              label="Specialization"
-              name="specialization"
-              value={formData.specialization}
+              label="Full Name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
+              placeholder="Dr. John Doe"
             />
-          )}
 
-          {error && (
-            <p className="text-sm text-red-600 text-center">{error}</p>
-          )}
+            <InputField
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+            />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-md font-semibold
-                       hover:bg-blue-700 disabled:opacity-60 transition"
-          >
-            {loading ? "Creating account..." : "Sign Up"}
-          </button>
-        </form>
-      </Card>
+            <InputField
+              label="Password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+            />
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Role</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value, specialization: "" })
+                }
+                className="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Role</option>
+                <option value="DOCTOR">Doctor</option>
+                <option value="RESEARCHER">Researcher</option>
+              </select>
+            </div>
+
+            {formData.role === "DOCTOR" && (
+              <InputField
+                label="Specialization"
+                name="specialization"
+                value={formData.specialization}
+                onChange={handleChange}
+                placeholder="Cardiology"
+              />
+            )}
+
+            {error && (
+              <p className="text-sm text-red-600 text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-blue-600 to-teal-500
+                         text-white font-semibold tracking-wide
+                         hover:opacity-90 transition disabled:opacity-60"
+            >
+              {loading ? "Creating Account..." : "Sign Up"}
+            </button>
+          </form>
+
+          <p className="text-sm text-center text-gray-500 mt-6">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600 font-medium hover:underline">
+              Login
+            </Link>
+          </p>
+        </Card>
+      </div>
     </div>
   );
 }

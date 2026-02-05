@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function ResearcherDashboard() {
+export default function ResearcherDashboard({ children }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -12,20 +12,29 @@ export default function ResearcherDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="flex justify-between items-center p-4 bg-white shadow">
-        <h1 className="text-xl font-semibold">Researcher Dashboard</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Top Bar */}
+      <header className="flex justify-between items-center px-8 py-5 bg-white/80 backdrop-blur-xl border-b border-slate-200">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            Research Analytics
+          </h1>
+          <p className="text-sm text-slate-500">
+            Cardio Risk Analyzer • Population Insights
+          </p>
+        </div>
+
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="px-5 py-2 rounded-xl bg-red-500 text-white font-medium
+                     shadow hover:bg-red-600 transition"
         >
           Logout
         </button>
       </header>
 
-      <main className="p-6">
-        {/* Existing dashboard content */}
-      </main>
+      {/* Page Content */}
+      <main className="p-8 max-w-7xl mx-auto">{children}</main>
     </div>
   );
 }

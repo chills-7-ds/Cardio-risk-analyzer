@@ -24,9 +24,9 @@ export default function PatientReport() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <p className="p-6">Loading report...</p>;
+  if (loading) return <p className="p-8">Loading report...</p>;
   if (error === "ACCESS_DENIED") return <Navigate to="/unauthorized" />;
-  if (error) return <p className="p-6 text-red-500">{error}</p>;
+  if (error) return <p className="p-8 text-red-500">{error}</p>;
 
   const { demographics, vitals, analysis, patientId, generatedAt } = report;
 
@@ -35,10 +35,7 @@ export default function PatientReport() {
   const bpStatus = getVitalStatus("bloodPressure", vitals.bloodPressure);
 
   const handleDownloadPDF = async () => {
-    const element = reportRef.current;
-    if (!element) return;
-
-    const canvas = await html2canvas(element, {
+    const canvas = await html2canvas(reportRef.current, {
       scale: 2,
       useCORS: true,
     });
@@ -54,84 +51,125 @@ export default function PatientReport() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">
-          Patient Report (ID: {patientId})
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-8">
+      {/* ================= Header ================= */}
+      <header className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-12">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">
+            Patient Risk Report
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Patient ID: {patientId} • Generated{" "}
+            {new Date(generatedAt).toLocaleString()}
+          </p>
+        </div>
 
         <button
           onClick={handleDownloadPDF}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          className="px-6 py-2.5 rounded-xl
+                     bg-gradient-to-r from-emerald-500 to-teal-500
+                     text-white font-semibold
+                     shadow-lg shadow-emerald-500/20
+                     hover:opacity-90 transition"
         >
           Download PDF
         </button>
-      </div>
+      </header>
 
-      {/* PDF CONTENT START */}
-      <div ref={reportRef}>
-        {/* Demographics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white p-4 rounded shadow">
-            <p className="text-gray-500">Age</p>
-            <h3 className="text-xl">{demographics.age}</h3>
+      {/* ================= Report Body ================= */}
+      <main ref={reportRef} className="space-y-12">
+        {/* ===== Risk Overview ===== */}
+        <section className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">
+            Risk Overview
+          </h2>
+
+          <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+            <RiskBadge level={analysis.riskLevel} />
+
+            <p className="text-slate-600 text-sm leading-relaxed max-w-3xl">
+              Based on demographic attributes and analyzed clinical vitals,
+              the AI‑assisted cardiovascular model classifies this patient
+              under{" "}
+              <span className="font-semibold text-slate-800">
+                {analysis.riskLevel}
+              </span>{" "}
+              cardiovascular risk.
+            </p>
           </div>
+        </section>
 
-          <div className="bg-white p-4 rounded shadow">
-            <p className="text-gray-500">Gender</p>
-            <h3 className="text-xl">{demographics.gender}</h3>
+        {/* ===== Demographics ===== */}
+        <section>
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">
+            Patient Demographics
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <InfoCard label="Age" value={`${demographics.age} years`} />
+            <InfoCard label="Gender" value={demographics.gender} />
+            <VitalCard
+              label="Heart Rate"
+              value={`${vitals.heartRate} bpm`}
+              status={hrStatus}
+            />
           </div>
+        </section>
 
-          <div className={`p-4 rounded shadow border ${statusStyles[hrStatus]}`}>
-            <p className="text-sm">Heart Rate</p>
-            <h3 className="text-xl font-semibold">
-              {vitals.heartRate} bpm
-            </h3>
-            <p className="text-xs mt-1">{hrStatus}</p>
+        {/* ===== Clinical Vitals ===== */}
+        <section>
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">
+            Clinical Vitals
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <VitalCard
+              label="Cholesterol"
+              value={vitals.cholesterol}
+              status={cholStatus}
+            />
+            <VitalCard
+              label="Blood Pressure"
+              value={vitals.bloodPressure}
+              status={bpStatus}
+            />
           </div>
-        </div>
+        </section>
+      </main>
+    </div>
+  );
+}
 
-        {/* Vital Parameters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div
-            className={`p-4 rounded shadow border ${statusStyles[cholStatus]}`}
-          >
-            <p className="text-sm">Cholesterol</p>
-            <h3 className="text-xl font-semibold">{vitals.cholesterol}</h3>
-            <p className="text-xs mt-1">{cholStatus}</p>
-          </div>
+/* ================= Reusable UI Blocks ================= */
 
-          <div
-            className={`p-4 rounded shadow border ${statusStyles[bpStatus]}`}
-          >
-            <p className="text-sm">Blood Pressure</p>
-            <h3 className="text-xl font-semibold">{vitals.bloodPressure}</h3>
-            <p className="text-xs mt-1">{bpStatus}</p>
-          </div>
-        </div>
+function InfoCard({ label, value }) {
+  return (
+    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <p className="text-xs uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+      <h3 className="text-2xl font-semibold text-slate-800 mt-2">
+        {value}
+      </h3>
+    </div>
+  );
+}
 
-        {/* Risk Assessment */}
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="font-semibold mb-2">Risk Assessment</h2>
-
-          <RiskBadge level={analysis.riskLevel} />
-
-          <p className="text-sm text-gray-600 mt-3">
-            Based on the analyzed vitals and demographic attributes, the patient
-            has been classified as{" "}
-            <span className="font-semibold">
-              {analysis.riskLevel}
-            </span>{" "}
-            cardiovascular risk.
-          </p>
-
-          <p className="text-xs text-gray-400 mt-2">
-            Report generated on {new Date(generatedAt).toLocaleString()}
-          </p>
-        </div>
-      </div>
-      {/* PDF CONTENT END */}
+function VitalCard({ label, value, status }) {
+  return (
+    <div
+      className={`bg-white rounded-3xl p-6 shadow-sm
+                  border-l-4 ${statusStyles[status]} border border-slate-100`}
+    >
+      <p className="text-xs uppercase tracking-wide text-slate-400">
+        {label}
+      </p>
+      <h3 className="text-2xl font-semibold text-slate-800 mt-2">
+        {value}
+      </h3>
+      <p className="text-xs text-slate-500 mt-1">
+        {status}
+      </p>
     </div>
   );
 }

@@ -3,15 +3,17 @@ import React from "react";
 export default function RiskBadge({ level }) {
   if (!level) return null;
 
-  const colors = {
-    LOW: "bg-green-500",
-    MEDIUM: "bg-yellow-500 text-black",
-    HIGH: "bg-red-500",
+  const styles = {
+    LOW: "bg-emerald-100 text-emerald-700",
+    MEDIUM: "bg-yellow-100 text-yellow-800",
+    HIGH: "bg-red-100 text-red-700",
   };
 
   return (
     <span
-      className={`inline-block px-4 py-1 rounded-full text-sm font-bold text-white ${colors[level]}`}
+      className={`inline-flex items-center px-4 py-1
+                  rounded-full text-sm font-semibold
+                  ${styles[level]}`}
     >
       {level} RISK
     </span>
