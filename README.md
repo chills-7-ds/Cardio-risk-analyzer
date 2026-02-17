@@ -92,6 +92,7 @@ Cardio-risk-analyzer/
 │   ├── package.json
 │   └── vite.config.js
 │
+├──screenshots
 ├── heart.csv
 ├── LICENSE
 └── README.md
@@ -131,6 +132,24 @@ cd cardio-risk-frontend
 npm install
 npm run dev
 ```
+
+## 🖼️ Frontend Screenshots
+
+### Signup Page
+![Signup Page](screenshots/signup_page.png)
+
+### Login Page
+![Login Page](screenshots/login_page.png)
+
+### Doctor Dashboard
+![Doctor Dashboard](screenshots/doctor_dashboard.png)
+
+### Patient Report Page
+![Patient Report Page](screenshots/patient_report_page.png)
+
+### Researcher Dashboard
+![Researcher Dashboard](screenshots/researcher_dashboard.png)
+
 
 📌 Future Enhancements
 • Database integration (MongoDB / PostgreSQL)
